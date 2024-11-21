@@ -2,7 +2,7 @@ import pandas as pd
 from tqdm import tqdm
 
 
-def transfrom(profit_table, date):
+def transform(profit_table, date):
     """ Собирает таблицу флагов активности по продуктам
         на основании прибыли и количеству совершёных транзакций
         
@@ -39,5 +39,5 @@ def transfrom(profit_table, date):
 
 if __name__ == "__main__":
     profit_data = pd.read_csv('profit_table.csv')
-    flags_activity = transfrom(profit_data, '2024-03-01')
+    flags_activity = transform(profit_data, '2024-03-01')
     flags_activity.to_csv('flags_activity.csv', index=False)
