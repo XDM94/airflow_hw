@@ -1,6 +1,7 @@
 x-airflow-common: &airflow-common
   image: hw_airflow
   environment: &airflow-common-env
+    AIRFLOW_UID: "50000"
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
@@ -11,7 +12,6 @@ x-airflow-common: &airflow-common
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ./data:/opt/airflow/data
-    - ./scripts:/opt/airflow/scripts
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on: &airflow-common-depends-on
     postgres:
@@ -65,17 +65,19 @@ services:
       - -c
       - |
         # Создаем директории с правильными правами
-        mkdir -p /opt/airflow/logs /opt/airflow/dags /opt/airflow/plugins /opt/airflow/data /opt/airflow/scripts
-        chown -R "${AIRFLOW_UID}:0" /opt/airflow/{logs,dags,plugins,data,scripts}
-        # Инициализируем базу данных и создаем пользователя
-        exec airflow db init && 
-        airflow users create \
-          --username user1 \
-          --firstname Denis \
-          --lastname Khlamov \
-          --role Admin \
-          --email admin@example.com \
-          --password 481
+        mkdir -p  /sources/logs /sources/dags /sources/plugins /source/data
+        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins,data}
+        echo "Инициализация базы данных..."
+               airflow db init
+
+               echo "Создаем пользователя..."
+               airflow users create \
+                 --username user1 \
+                 --firstname Denis \
+                 --lastname Khlamov \
+                 --role Admin \
+                 --email admin@example.com \
+                 --password 481
     environment:
       <<: *airflow-common-env
     depends_on:
